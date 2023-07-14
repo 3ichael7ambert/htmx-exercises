@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>htmx Demo</title>
+  <script src="https://unpkg.com/htmx.org/dist/htmx.min.js"></script>
+</head>
+<body>
+  <h1>htmx Demo</h1>
+
+  <h2>Todo List</h2>
+
+  <ul id="todoList">
+    <li hx-get="/todos" hx-swap="outerHTML">
+      Loading todos...
+    </li>
+  </ul>
+
+  <h2>Add Todo</h2>
+
+  <form id="addTodoForm" hx-post="/todos" hx-target="#todoList" hx-swap="outerHTML">
+    <label for="todoTitle">Title:</label>
+    <input type="text" id="todoTitle" name="title" required>
+
+    <br>
+
+    <label for="todoDescription">Description:</label>
+    <textarea id="todoDescription" name="description"></textarea>
+
+    <br>
+
+    <button type="submit">Add Todo</button>
+  </form>
+
+  <h2>Real-time Updates</h2>
+
+  <div id="realTimeUpdates">
+    <p>Waiting for real-time updates...</p>
+  </div>
+
+  <script>
+    // Server-sent events (SSE) for real-time updates
+    const eventSource = new EventSource('/real-time-updates');
+
+    eventSource.onmessage = function (event) {
+      const data = JSON.parse(event.data);
+      const message = data.message;
+      const timestamp = data.timestamp;
+
+      const updatesDiv = document.getElementById('realTimeUpdates');
+      const pElement = document.createElement('p');
+      pElement.textContent = `[${timestamp}] ${message}`;
+
+      updatesDiv.prepend(pElement);
+    };
+  </script>
+</body>
+</html>
